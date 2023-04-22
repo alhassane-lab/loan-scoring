@@ -155,7 +155,17 @@ def main():
             else:
                 st.error('Please, enter a valid customer id.', icon="🚨")
                     
-  
+        else:
+            st.markdown("""---""")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown('**Project Lifecycle**')
+                lifecycle_schema = Image.open("./data/lifecycle.png")        
+                st.image(lifecycle_schema,use_column_width=True)
+            with col2:
+                st.markdown('**Global Explainability**')
+                explain_image= Image.open("./data/explainability.png")        
+                st.image(explain_image,use_column_width=True)
     
 
 if __name__ == '__main__':
