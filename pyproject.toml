@@ -25,6 +25,8 @@ hyperopt = "^0.2.7"
 shap = "^0.41.0"
 numba = "^0.56.4"
 boltons = "^23.0.0"
+evidently = "^0.3.0"
+jupyter-contrib-nbextensions = "^0.7.0"
 
 
 [build-system]

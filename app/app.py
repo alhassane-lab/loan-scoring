@@ -17,8 +17,8 @@ def load_file(model_file):
 @st.cache_resource
 def load():
     loan_scoring_classifier = joblib.load(open(os.path.join('./models/best_lightGBM_model.pkl'), 'rb'))
-    data = joblib.load(open(os.path.join('./data/raw_data_scaled_df.pkl'), 'rb'))  
-    raw_data = joblib.load(open(os.path.join('./data/raw_data.pkl'), 'rb'))
+    data = joblib.load(open(os.path.join('./data/sample_scaled_data.pkl'), 'rb'))  
+    raw_data = joblib.load(open(os.path.join('./data/sample_raw_data.pkl'), 'rb'))
     
     return loan_scoring_classifier, data, raw_data
 
@@ -29,13 +29,10 @@ raw_data['proba_true'] = probas[:,0]
 mean_score = raw_data['proba_true'].mean()
 
 def plot_preds_proba(customer_id):
-    user = raw_data[raw_data.index==int(customer_id)]
     user_infos = {
-        # "Age" : int(user["DAYS_BIRTH"]/ -365),
-        # "Seniority" : int(user["DAYS_EMPLOYED"].values / -365),
-        "Income" : user["AMT_INCOME_TOTAL"].item(),
-        "Credit" : user["AMT_CREDIT"].item(),
-        "Annuity" : user["AMT_ANNUITY"].item(),
+        "Income" : raw_data[raw_data['SK_ID_CURR']==customer_id]["AMT_INCOME_TOTAL"].values[0],
+        "Credit" : raw_data[raw_data['SK_ID_CURR']==customer_id]["AMT_CREDIT"].values[0],
+        "Annuity" : raw_data[raw_data['SK_ID_CURR']==customer_id]["AMT_ANNUITY"].values[0],
     }
     pred_proba_df = pd.DataFrame({'Amount':user_infos.values(), 'Operation': user_infos.keys()})
 
@@ -78,9 +75,9 @@ def main():
     st.title('Loan Scoring Model')
     
     with st.form(key='myform'):
-        #user_liste = data.index.astype(np.int32)
-        #user_id_value = st.selectbox('Select customer id', user_liste)
-        user_id_value = st.number_input('Select customer id', min_value=100001)
+        user_liste = data.index.astype(np.int32)
+        user_id_value = st.selectbox('Select customer id', user_liste)
+       # user_id_value = st.selectbox('Select customer id', min_value=100001)
         submit_button = st.form_submit_button(label='Show')
         
         if submit_button:
