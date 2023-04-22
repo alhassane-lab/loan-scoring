@@ -127,14 +127,14 @@ def main():
                     #st.metric(label='Accuracy', value='', delta='1.6')
                     st.info('Credit Score')
                     c1, c2, c3 = st.columns(3)
-                    if round(probabilities[0]*100,2) > 70:
-                        c2.metric('High Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.7)*100,2)}")
+                    if round(probabilities[0]*100,2) > 60:
+                        c2.metric('High Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
                         st.success('This customer is a potential refunder',icon="✅")
-                    elif 50 < round(probabilities[0]*100,2) < 70:
-                        c2.metric('Medium Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.7)*100,2)}")
+                    elif 50 < round(probabilities[0]*100,2) < 60:
+                        c2.metric('Medium Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
                         st.warning('This customer may have difficulties in refunding', icon="⚠️") 
                     else:
-                        c2.metric('Low Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.7)*100,2)}")
+                        c2.metric('Low Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
                         st.error('This customer can not refund', icon="🚨")
                     #c2.metric('Non refunder', value = probabilities[1], delta=f"{round(probabilities[1]*100,2)}%",delta_color="inverse")
                     #st.metric('Refunder', value = probabilities[0], delta=f"{round(probabilities[0]*100,2)}%")
@@ -153,7 +153,10 @@ def main():
                     st.write(dict_infos)
                     st.markdown("""---""")
                     plot_preds_proba(user_id_value)
-
+                    
+                    # explainer = shap.Explainer(loan_scoring_classifier, user)
+                    # shap_values = explainer(user, check_additivity=False)
+                    # shap.plots.bar(shap_values)
 
                     # #st.metric(label='Accuracy', value='', delta='1.6')
                     # c1, c2 = st.columns(2)
