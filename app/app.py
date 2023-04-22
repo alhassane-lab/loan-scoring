@@ -3,27 +3,33 @@ import joblib
 import pandas as pd
 import os
 from lightgbm import LGBMClassifier
+from sklearn.preprocessing import MinMaxScaler
 import altair as alt
 from PIL import Image
 import numpy as np
 
+
 st.set_page_config(page_title="CREDIT SCORING - DACHBOARD CLIENT SCORING", page_icon="", layout="wide")
 
-def load_file(model_file):
-    model = joblib.load(open(os.path.join(model_file), 'rb'))
+def load_file(path):
+    model = joblib.load(open(os.path.join(path), 'rb'))
     return model
 
 @st.cache_data
 @st.cache_resource
 def load():
-    loan_scoring_classifier = joblib.load(open(os.path.join('./models/best_lightGBM_model.pkl'), 'rb'))
-    data = joblib.load(open(os.path.join('./data/sample_scaled_data.pkl'), 'rb'))  
-    raw_data = joblib.load(open(os.path.join('./data/sample_raw_data.pkl'), 'rb'))
+    loan_scoring_classifier = joblib.load(open(os.path.join('./models/best_model.pkl'), 'rb'))
+    training_features = joblib.load(open(os.path.join('./data/training_features.pkl'), 'rb'))  
+    raw_data = joblib.load(open(os.path.join('./data/full_data.pkl'), 'rb'))
     
-    return loan_scoring_classifier, data, raw_data
+    return loan_scoring_classifier, training_features, raw_data
 
+loan_scoring_classifier, training_features, raw_data = load()
 
-loan_scoring_classifier, data, raw_data = load()
+scaler = MinMaxScaler()
+data = scaler.fit_transform(raw_data[training_features])
+data = pd.DataFrame(data, index=raw_data.index, columns=training_features)
+raw_data = raw_data.reset_index()
 probas = loan_scoring_classifier.predict_proba(data)
 raw_data['proba_true'] = probas[:,0]
 mean_score = raw_data['proba_true'].mean()
@@ -75,7 +81,7 @@ def main():
     st.title('Loan Scoring Model')
     
     with st.form(key='myform'):
-        user_liste = data.index.astype(np.int32)
+        user_liste = data.index
         user_id_value = st.selectbox('Select customer id', user_liste)
        # user_id_value = st.selectbox('Select customer id', min_value=100001)
         submit_button = st.form_submit_button(label='Show')
@@ -96,6 +102,7 @@ def main():
                     st.info('Customer Infos')
                     #st.text(f'User Id : {user_id_value}')
                     user_infos = raw_data[raw_data['SK_ID_CURR']==user_id_value]
+                    
                     # st.write('Age', int(user_infos["DAYS_BIRTH"]/ -365))
                     # st.write('Sex', user_infos["CODE_GENDER"].item())
                     # st.write('Status', user_infos["NAME_FAMILY_STATUS"].item())
