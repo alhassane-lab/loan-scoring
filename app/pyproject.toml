@@ -10,6 +10,7 @@ python = ">=3.9,<3.9.7 || >3.9.7,<4"
 streamlit = "^1.21.0"
 joblib = "^1.2.0"
 lightgbm = "^3.3.5"
+lime = "^0.2.0.1"
 
 
 [build-system]
