@@ -7,10 +7,14 @@ from sklearn.preprocessing import MinMaxScaler
 import altair as alt
 from PIL import Image
 import numpy as np
+import streamlit.components.v1 as components
+import lime
+from lime import lime_tabular
+
 
 
 st.set_page_config(page_title="CREDIT SCORING - DACHBOARD CLIENT SCORING", page_icon="", layout="wide")
-
+   
 def load_file(path):
     model = joblib.load(open(os.path.join(path), 'rb'))
     return model
@@ -34,6 +38,14 @@ probas = loan_scoring_classifier.predict_proba(data)
 raw_data['proba_true'] = probas[:,0]
 mean_score = raw_data['proba_true'].mean()
 
+explainer = lime_tabular.LimeTabularExplainer(
+    training_data=np.array(data),
+    feature_names=data.columns,
+    #class_names=['bad', 'good'],
+    mode='classification'
+    )
+
+
 def plot_preds_proba(customer_id):
     user_infos = {
         "Income" : raw_data[raw_data['SK_ID_CURR']==customer_id]["AMT_INCOME_TOTAL"].values[0],
@@ -48,7 +60,7 @@ def plot_preds_proba(customer_id):
         color="Operation"
     ).properties(
     width=330,
-    height=330
+    height=310
 )
     st.altair_chart(c)
 
@@ -82,8 +94,8 @@ def main():
     
     with st.form(key='myform'):
         user_liste = data.index
-        user_id_value = st.selectbox('Select customer id', user_liste)
-       # user_id_value = st.selectbox('Select customer id', min_value=100001)
+        #user_id_value = st.selectbox('Select customer id', user_liste)
+        user_id_value = st.number_input('Select customer id', min_value=100001)
         submit_button = st.form_submit_button(label='Show')
         
         if submit_button:
@@ -123,26 +135,7 @@ def main():
                     st.write(dict_infos)
                     
                     #st.info('Results')
-                    
-                    #st.metric(label='Accuracy', value='', delta='1.6')
-                    st.info('Credit Score')
-                    c1, c2, c3 = st.columns(3)
-                    if round(probabilities[0]*100,2) > 60:
-                        c2.metric('High Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
-                        st.success('This customer is a potential refunder',icon="✅")
-                    elif 50 < round(probabilities[0]*100,2) < 60:
-                        c2.metric('Medium Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
-                        st.warning('This customer may have difficulties in refunding', icon="⚠️") 
-                    else:
-                        c2.metric('Low Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
-                        st.error('This customer can not refund', icon="🚨")
-                    #c2.metric('Non refunder', value = probabilities[1], delta=f"{round(probabilities[1]*100,2)}%",delta_color="inverse")
-                    #st.metric('Refunder', value = probabilities[0], delta=f"{round(probabilities[0]*100,2)}%")
-                    
-                    
-                    
-                # dis
-                with col2:
+                    st.markdown("""---""")
                     st.info('Loan History')
                     dict_infos = {
                             "Type contrat" : user_infos["NAME_CONTRACT_TYPE"].item(),
@@ -151,17 +144,43 @@ def main():
                         }
                     user = data[data.index==int(user_id_value)]
                     st.write(dict_infos)
+                    #st.metric(label='Accuracy', value='', delta='1.6')
                     st.markdown("""---""")
-                    plot_preds_proba(user_id_value)
+                    st.info('Credit Score')
+                    c1, c2, c3, c4,c5 = st.columns(5)
+                    if round(probabilities[0]*100,2) > 60:
+                        c3.metric('High Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
+          
+                        st.success('This customer is a potential refunder',icon="✅")
+                    elif 50 < round(probabilities[0]*100,2) < 60:
+                        c3.metric('Medium Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
+    
+                        st.warning('This customer may have difficulties in refunding', icon="⚠️") 
+                    else:
+                        c3.metric('Low Score', value = round(probabilities[0]*100,2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
+    
+                        st.error('This customer can not refund', icon="🚨")
+                    #c2.metric('Non refunder', value = probabilities[1], delta=f"{round(probabilities[1]*100,2)}%",delta_color="inverse")
+                    #st.metric('Refunder', value = probabilities[0], delta=f"{round(probabilities[0]*100,2)}%")
                     
-                    # explainer = shap.Explainer(loan_scoring_classifier, user)
-                    # shap_values = explainer(user, check_additivity=False)
-                    # shap.plots.bar(shap_values)
+                    
+                    
+                # dis
+                with col2:
+                    st.info('Features contribution')
+                    exp = explainer.explain_instance(
+                        data_row=data.loc[user_id_value], 
+                        predict_fn=loan_scoring_classifier.predict_proba
+                    )
 
-                    # #st.metric(label='Accuracy', value='', delta='1.6')
-                    # c1, c2 = st.columns(2)
-                    # c1.metric('Refunder', value = probabilities[0], delta=f"{round(probabilities[0]*100,2)}%")
-                    # c2.metric('Non refunder', value = probabilities[1], delta=f"{round(probabilities[1]*100,2)}%",delta_color="inverse")
+                    #exp.show_in_notebook(show_table=True)
+                    html = exp.as_html()
+                    import streamlit.components.v1 as components
+                    components.html(html, height=550)
+                    st.markdown("""---""")
+                    col1, col2, col3, col4, col5 = st.columns(5)
+                    with col2:
+                        plot_preds_proba(user_id_value)
             else:
                 st.error('Please, enter a valid customer id.', icon="🚨")
                     
