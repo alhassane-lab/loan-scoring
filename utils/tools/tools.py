@@ -1,3 +1,9 @@
+"""
+Tools for :
+- data processing : cleaning, Engineering, etc...
+- cross validation
+- Runing mlfow experiments
+"""
 import pandas as pd
 import numpy as np
 import mlflow
