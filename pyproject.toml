@@ -28,6 +28,7 @@ boltons = "^23.0.0"
 jupyter-contrib-nbextensions = "^0.7.0"
 scipy = "^1.10.1"
 cinnamon = "^0.2.1"
+black = {extras = ["jupyter"], version = "^23.3.0"}
 
 
 [tool.poetry.group.dev.dependencies]
