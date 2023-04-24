@@ -15,6 +15,7 @@ from sklearn.metrics import *
 
 path = "../data_origin/"
 
+
 # Fonction d'encodage :
 def one_hot_encoder(df, nan_as_category=True):
     original_columns = list(df.columns)
@@ -312,8 +313,9 @@ def main(debug=False):
 
 
 def cross_val_split(X, y, num_folds=10, stratified=False, debug=False):
-    """This function implement a cross validation.It takes as input a some features(X),a target variable 
-    and integer as the number of folds. It return the trainings and testing sets after the cross validation."""
+    """This function implement a cross validation.It takes as input a some features(X),a target variable
+    and integer as the number of folds. It return the trainings and testing sets after the cross validation.
+    """
     # Cross validation model
     if stratified:
         folds = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=5)
@@ -367,51 +369,59 @@ def describe_data(df, figsize=(6, 4)):
     # run with normal data
 
 
-
-        
-        
-
 def evaluate_model(model, x, y, x_test, y_test, model_name, balancing_method):
-    
-    #Entrainement
+    # Entrainement
     start = time.time()
-    #model = gs.fit(x,y)
-    end = time.time()-start
+    # model = gs.fit(x,y)
+    end = time.time() - start
 
-    if (model_name != 'Baseline'):
+    if model_name != "Baseline":
         df_results = pd.DataFrame.from_dict(model.cv_results_)
 
-    #Training Performance
-    if (model_name == 'Baseline'):
-        #y_pred = model.predict(x)
+    # Training Performance
+    if model_name == "Baseline":
+        # y_pred = model.predict(x)
         y_proba = model.predict_proba(x)
 
-        auc_train = round(roc_auc_score(y, y_proba[:,1]),3) 
-        #f2_train = round(fbeta_score(y, y_pred, beta=2), 3)
+        auc_train = round(roc_auc_score(y, y_proba[:, 1]), 3)
+        # f2_train = round(fbeta_score(y, y_pred, beta=2), 3)
     else:
-        auc_train = round(model.best_score_,3) 
-        #f2_train = round(np.mean(df_results[df_results.rank_test_F2 == 1]['mean_test_F2']),3)
+        auc_train = round(model.best_score_, 3)
+        # f2_train = round(np.mean(df_results[df_results.rank_test_F2 == 1]['mean_test_F2']),3)
 
-    #Testing Performance
-    #y_pred = model.predict(x_test)
+    # Testing Performance
+    # y_pred = model.predict(x_test)
     y_proba = model.predict_proba(x_test)
-    auc_test = round(roc_auc_score(y_test, y_proba[:,1]),3) 
-    #f2_test = round(fbeta_score(y_test, y_pred, beta=2), 3)
+    auc_test = round(roc_auc_score(y_test, y_proba[:, 1]), 3)
+    # f2_test = round(fbeta_score(y_test, y_pred, beta=2), 3)
 
-    row = [model_name, 
-            balancing_method,
-            auc_train, 
-            auc_test,
-            #f2_train,
-            #f2_test,
-            end]
+    row = [
+        model_name,
+        balancing_method,
+        auc_train,
+        auc_test,
+        # f2_train,
+        # f2_test,
+        end,
+    ]
 
     return row
 
-#------------------------------------------
+
+# ------------------------------------------
 
 
-def run_experiment(experiment_name, name, model, X_train, X_test, y_train, y_test, model_name, balancing_method):
+def run_experiment(
+    experiment_name,
+    name,
+    model,
+    X_train,
+    X_test,
+    y_train,
+    y_test,
+    model_name,
+    balancing_method,
+):
     mlflow.set_experiment(experiment_name)
     mlflow.sklearn.autolog()
     mlflow.lightgbm.autolog()
@@ -425,7 +435,7 @@ def run_experiment(experiment_name, name, model, X_train, X_test, y_train, y_tes
         cm = ConfusionMatrix(my_model, classes=y_train.value_counts().index)
         cm.score(X_test, y_test)
         cm.show()
-        metrics = evaluate_model(my_model, X_train, y_train, X_test, y_test, model_name, balancing_method)
+        metrics = evaluate_model(
+            my_model, X_train, y_train, X_test, y_test, model_name, balancing_method
+        )
         return metrics, my_model
-    
-    
