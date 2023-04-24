@@ -1,40 +1,38 @@
+"""
+Dashboard aims to....
+"""
+import os
 import streamlit as st
 import joblib
 import pandas as pd
-import os
-from lightgbm import LGBMClassifier
-from sklearn.preprocessing import MinMaxScaler
-import altair as alt
-from PIL import Image
 import numpy as np
-import streamlit.components.v1 as components
-import lime
+import altair as alt
+from streamlit.components import v1 as components
+from sklearn.preprocessing import MinMaxScaler
+from PIL import Image
 from lime import lime_tabular
-import streamlit.components.v1 as components
+
 
 
 st.set_page_config(
     page_title="CREDIT SCORING - DACHBOARD CLIENT SCORING", page_icon="", layout="wide"
 )
 
-
-def load_file(path):
-    model = joblib.load(open(os.path.join(path), "rb"))
-    return model
-
-
 @st.cache_data
 @st.cache_resource
 def load():
-    loan_scoring_classifier = joblib.load(
+    """
+    This functions aims to load data and models
+    """
+    model = joblib.load(
         open(os.path.join("./models/best_model.pkl"), "rb")
     )
-    training_features = joblib.load(
+    features = joblib.load(
         open(os.path.join("./data/training_features.pkl"), "rb")
     )
-    raw_data = joblib.load(open(os.path.join("./data/full_data.pkl"), "rb"))
+    dataframe = joblib.load(open(os.path.join("./data/full_data.pkl"), "rb"))
 
-    return loan_scoring_classifier, training_features, raw_data
+    return model, features,dataframe
 
 
 loan_scoring_classifier, training_features, raw_data = load()
@@ -56,6 +54,9 @@ explainer = lime_tabular.LimeTabularExplainer(
 
 
 def plot_preds_proba(customer_id):
+    """
+    This functions aims plot income, annuities and credit vizuals
+    """
     user_infos = {
         "Income": raw_data[raw_data["SK_ID_CURR"] == customer_id][
             "AMT_INCOME_TOTAL"
@@ -65,22 +66,14 @@ def plot_preds_proba(customer_id):
         ],
         "Annuity": raw_data[raw_data["SK_ID_CURR"] == customer_id][
             "AMT_ANNUITY"
-        ].values[0],
-    }
-    pred_proba_df = pd.DataFrame(
-        {"Amount": user_infos.values(), "Operation": user_infos.keys()}
-    )
-
-    c = (
-        alt.Chart(pred_proba_df)
-        .mark_bar()
-        .encode(x="Operation", y="Amount", color="Operation")
-        .properties(width=330, height=310)
-    )
+        ].values[0],}
+    pred_proba_df = pd.DataFrame({"Amount": user_infos.values(), "Operation": user_infos.keys()})
+    c = (alt.Chart(pred_proba_df).mark_bar().encode(x="Operation", y="Amount", color="Operation").properties(width=330, height=310))
     st.altair_chart(c)
 
 
 def main():
+    #main function
     with st.sidebar:
         logo_image = Image.open("./data/logo.png")
         cover_image = Image.open("./data/cover.jpg")
@@ -116,9 +109,9 @@ def main():
                 # data = data.reset_index()
                 user = data[data.index == int(user_id_value)]
                 # prediction = loan_scoring_classifier.predict(user)[0]
-                probas = loan_scoring_classifier.predict_proba(user)
+                probas_user = loan_scoring_classifier.predict_proba(user)
                 probabilities = dict(
-                    zip(loan_scoring_classifier.classes_, np.round(probas[0], 3))
+                    zip(loan_scoring_classifier.classes_, np.round(probas_user[0], 3))
                 )
 
                 # display results
@@ -144,9 +137,6 @@ def main():
                         ),
                         "Income_Type": user_infos["NAME_INCOME_TYPE"].item(),
                         "Income_Ammount": user_infos["AMT_INCOME_TOTAL"].item(),
-                        # "Type contrat" : user_infos["NAME_CONTRACT_TYPE"].item(),
-                        # "Montant_credit" : user_infos["AMT_CREDIT"].item(),
-                        # "Annuites" : user_infos["AMT_ANNUITY"].item(),
                     }
                     st.write(dict_infos)
 
@@ -157,23 +147,23 @@ def main():
                         "Type contrat": user_infos["NAME_CONTRACT_TYPE"].item(),
                         "Montant_credit": user_infos["AMT_CREDIT"].item(),
                         "Annuites": user_infos["AMT_ANNUITY"].item(),
+                        "Annuites": user_infos["AMT_ANNUITY"].item(),
                     }
                     user = data[data.index == int(user_id_value)]
                     st.write(dict_infos)
                     # st.metric(label='Accuracy', value='', delta='1.6')
                     st.markdown("""---""")
                     st.info("Credit Score")
-                    c1, c2, c3, c4, c5 = st.columns(5)
+                    #c1, c2, c3, c4, c5 = st.columns(5)
                     if round(probabilities[0] * 100, 2) > 60:
-                        c3.metric(
-                            "High Score",
-                            value=round(probabilities[0] * 100, 2),
-                            delta=f"{round((probabilities[0]-0.6)*100,2)}",
-                        )
+                        st.metric("High Score",
+                                  value=round(probabilities[0] * 100, 2),
+                                  delta=f"{round((probabilities[0]-0.6)*100,2)}"
+                                  )
 
                         st.success("This customer is a potential refunder", icon="✅")
                     elif 50 < round(probabilities[0] * 100, 2) < 60:
-                        c3.metric(
+                        st.metric(
                             "Medium Score",
                             value=round(probabilities[0] * 100, 2),
                             delta=f"{round((probabilities[0]-0.6)*100,2)}",
@@ -184,31 +174,14 @@ def main():
                             icon="⚠️",
                         )
                     else:
-                        c3.metric(
-                            "Low Score",
-                            value=round(probabilities[0] * 100, 2),
-                            delta=f"{round((probabilities[0]-0.6)*100,2)}",
-                        )
-
+                        st.metric("Low Score", value=round(probabilities[0] * 100, 2), delta=f"{round((probabilities[0]-0.6)*100,2)}")
                         st.error("This customer can not refund", icon="🚨")
-                    # c2.metric('Non refunder', value = probabilities[1], delta=f"{round(probabilities[1]*100,2)}%",delta_color="inverse")
-                    # st.metric('Refunder', value = probabilities[0], delta=f"{round(probabilities[0]*100,2)}%")
-
-                # dis
                 with col2:
                     st.info("Features contribution")
-                    exp = explainer.explain_instance(
-                        data_row=data.loc[user_id_value],
-                        predict_fn=loan_scoring_classifier.predict_proba,
-                    )
-
-                    # exp.show_in_notebook(show_table=True)
-
+                    exp = explainer.explain_instance(data_row=data.loc[user_id_value],predict_fn=loan_scoring_classifier.predict_proba)
                     components.html(exp.as_html(), height=550)
                     st.markdown("""---""")
-                    col1, col2, col3, col4, col5 = st.columns(5)
-                    with col2:
-                        plot_preds_proba(user_id_value)
+                    plot_preds_proba(user_id_value)
             else:
                 st.error("Please, enter a valid customer id.", icon="🚨")
 
@@ -221,12 +194,11 @@ def main():
                 st.image(lifecycle_schema, use_column_width=True)
             with col2:
                 st.markdown("**Global Explainability**")
-                explain_image = Image.open("./data/explainability.png")
-                st.image(explain_image, use_column_width=True)
+                st.image(Image.open("./data/explainability.png"), use_column_width=True)
 
-            HtmlFile = open("./data/data_drift_report.html", "r", encoding="utf-8")
-            source_code = HtmlFile.read()
-            components.html(source_code, height=1800)
+            report = open("./data/data_drift_report.html", "r", encoding="utf-8")
+            source_code = report.read()
+            components.html(source_code, height=1500)
 
 
 if __name__ == "__main__":
