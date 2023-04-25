@@ -1,5 +1,7 @@
 ## Description
-**"Prêt à dépenser"** is a financial company that offers consumer credit. **Loan scoring model** is a tool destined to Relationship Managers that aims to give a **guidance in credit granting decision** by computing the probability that a customer can repay his credit. 
+**Loan scoring model** is a tool that aims to give a **guidance in credit granting decision** for "Prêt à dépenser" Relationship Managers.
+
+NB: "Prêt à dépenser" is a financial company that offers consumer credit.
  
 
 ## Main steps 
