@@ -7,9 +7,9 @@ NB: "Prêt à dépenser" is a financial company that offers consumer credit.
 ## Main steps 
 - Data Preparation : cleaning, exploring, feature engineering, resampling
 - Modeling : modeling, tuning, tracking mlflow
-- FrontEnd : develop a streamlit app
-- Industrilization : dockerization, deploiement and CICD
-- Monitoring : data drift checking
+- Monitoring : data drift report with evidently and cinnamon
+- FrontEnd : streamlit app dev
+- Industrilization : dockerization, continous deploiement (black linter, integration test, )
 
 
 ![lifecycle](./img/lifecycle.png)
