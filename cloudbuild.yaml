@@ -1,14 +1,14 @@
-# steps:
-#   # Docker Build
-#   - name: 'gcr.io/cloud-builders/docker'
-#     args: ['build', '-t',
-#            'us-central1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage',
-#            '.']
+steps:
+  # Docker Build
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t',
+           'eu-west1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage',
+           '.']
 
 #   # Docker Push
 #   - name: 'gcr.io/cloud-builders/docker'
 #     args: ['push',
-#            'us-central1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage']
+#            'eu-west1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage']
 
 #   # Entrypoint, timeout and environment variables
 #   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -17,7 +17,7 @@
 #     args: ['compute', 'instances',
 #            'create-with-container', 'my-vm-name',
 #            '--container-image',
-#            'us-central1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage']
+#            'eu-west1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage']
 #     env:
-#       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
-#       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+#       - 'CLOUDSDK_COMPUTE_REGION=eu-west1'
+#       - 'CLOUDSDK_COMPUTE_ZONE=eu-west1-a'
