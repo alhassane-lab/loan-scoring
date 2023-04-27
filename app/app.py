@@ -81,7 +81,7 @@ def main():
     with st.sidebar:
         col1, col2, col3 = st.columns(3)
         logo_image = Image.open("./data/logo.png")
-        col2.image(logo_image, width=120)
+        col2.image(logo_image, use_column_width=True)
         st.markdown("""---""")
         st.markdown(
             """
@@ -232,12 +232,11 @@ def main():
                         4. Analyze user informations and prediction results
                         """,
                     )
-                    st.markdown("""---""")
                     st.markdown("**Few Tips**")
                     st.success(
                         """
-                        1. U need to consider all the informations, also use the vizual oh the bottom right.
-                        2. Use the delta. It becomes green if a potential refunder and red if not.
+                        1. Consider all the informations, use the vizual oh the bottom right.
+                        2. Use wisely the score, pay attention on the delta (becomes green if a potential refunder)
                         4. Keep an eye on the data drift report is essential.
                         """,
                     )
