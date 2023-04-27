@@ -18,12 +18,12 @@ steps:
   args:
   - clone
   - --recurse-submodules
-  - git@github.com:GIT_USERNAME/GIT_REPOSITORY
+  - git@github.com:alhasdata/loan-scoring
   volumes:
   - name: 'ssh'
     path: /root/.ssh
 
 availableSecrets:
   secretManager:
-  - versionName: projects/PROJECT_ID/secrets/SECRET_NAME/versions/latest
+  - versionName: projects/loan-scoring/secrets/gcp/versions/latest
     env: 'SSH_KEY'
