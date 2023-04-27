@@ -35,6 +35,4 @@ EXPOSE 8080
 
 COPY . .
 
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
-
 ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8080", "--server.address=0.0.0.0"]
