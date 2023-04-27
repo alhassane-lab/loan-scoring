@@ -1,23 +1,29 @@
+# Access the id_github file from Secret Manager, and setup SSH
 steps:
-  # Docker Build
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t',
-           'eu-west1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage',
-           '.']
+- name: 'gcr.io/cloud-builders/git'
+  secretEnv: ['SSH_KEY']
+  entrypoint: 'bash'
+  args:
+  - -c
+  - |
+    echo "$$SSH_KEY" >> /root/.ssh/id_rsa
+    chmod 400 /root/.ssh/id_rsa
+    cp known_hosts.github /root/.ssh/known_hosts
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
 
-#   # Docker Push
-#   - name: 'gcr.io/cloud-builders/docker'
-#     args: ['push',
-#            'eu-west1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage']
+# Clone the repository
+- name: 'gcr.io/cloud-builders/git'
+  args:
+  - clone
+  - --recurse-submodules
+  - git@github.com:GIT_USERNAME/GIT_REPOSITORY
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
 
-#   # Entrypoint, timeout and environment variables
-#   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#     entrypoint: 'gcloud'
-#     timeout: 240s
-#     args: ['compute', 'instances',
-#            'create-with-container', 'my-vm-name',
-#            '--container-image',
-#            'eu-west1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage']
-#     env:
-#       - 'CLOUDSDK_COMPUTE_REGION=eu-west1'
-#       - 'CLOUDSDK_COMPUTE_ZONE=eu-west1-a'
+availableSecrets:
+  secretManager:
+  - versionName: projects/PROJECT_ID/secrets/SECRET_NAME/versions/latest
+    env: 'SSH_KEY'
