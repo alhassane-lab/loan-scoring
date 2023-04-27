@@ -236,7 +236,7 @@ def main():
                     st.success(
                         """
                         1. Consider all the informations, use the vizual oh the bottom right.
-                        2. Use wisely the score, pay attention on the delta (becomes green if a potential refunder)
+                        2. Use Credit Score wisely, delta becomes green for potential refunder.
                         4. Keep an eye on the data drift report is essential.
                         """,
                     )

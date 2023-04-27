@@ -13,7 +13,7 @@ NB: "Prêt à dépenser" is a financial company that offers consumer credit.
 
 
 ![lifecycle](./img/lifecycle.png)
-## CICD Architecture
+## Continious deployment
 ![archi](./img/archi_img.jpg)
 
 ## Link to the web app
