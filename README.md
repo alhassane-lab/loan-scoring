@@ -15,3 +15,6 @@ NB: "Prêt à dépenser" is a financial company that offers consumer credit.
 ![lifecycle](./img/lifecycle.png)
 ## CICD Architecture
 ![archi](./img/archi_img.jpg)
+
+## Link to the web app
+https://loan-scoring-3hnypmlvvq-ew.a.run.app/
