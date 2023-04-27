@@ -25,5 +25,5 @@ steps:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/loan-scoring/secrets/gcp/versions/latest
+  - versionName: projects/loan-scoring/secrets/github-ssh/versions/latest
     env: 'SSH_KEY'
