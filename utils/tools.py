@@ -37,7 +37,7 @@ def application_train_test(num_rows=None, nan_as_category=False):
     train_df = pd.read_csv(path + "application_train.csv", nrows=num_rows)
     test_df = pd.read_csv(path + "application_test.csv", nrows=num_rows)
     print("Train set: {}, Test set: {}".format(len(train_df), len(test_df)))
-    df = pd.concat([train_df,test_df]).reset_index()
+    df = pd.concat([train_df, test_df]).reset_index()
 
     # Remove "CODE_GENDER"
     # df.drop(columns=["CODE_GENDER"], inplace=True)
