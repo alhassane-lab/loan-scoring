@@ -4,6 +4,7 @@
 This section is about the web application. It is a dashboard coded with streamlit.
 
 ## Structure
+```bash
 .
 ├── Dockerfile
 ├── README.md
@@ -34,5 +35,4 @@ This section is about the web application. It is a dashboard coded with streamli
 └── tests
     ├── __init__.py
     └── test_unit.py
-
-
+```
