@@ -28,6 +28,8 @@ scipy = "^1.10.1"
 cinnamon = "^0.2.1"
 black = {extras = ["jupyter"], version = "^23.3.0"}
 pytest = "^7.3.1"
+lime = "^0.2.0.1"
+evidently = "^0.3.1"
 
 
 [tool.poetry.group.dev.dependencies]
