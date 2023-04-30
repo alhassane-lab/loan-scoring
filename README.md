@@ -14,7 +14,7 @@ Here, we will work mostly on **jupyter notebook environment**. We will have 3 su
 - **Modeling** : modeling, tuning, tracking mlflow
 - **Monitoring** : data drift report with evidently and cinnamon
 
-## Dashboard dev & deployment
+## Dashboard coding & deployment
 Here we used VScode and bash to code and deploy the web application.
 - Dashboard : structuring and coding the web application with streamlit. 
 - Industrilization : compiling, testing and deploying the applicaiotn.
