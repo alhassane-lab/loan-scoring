@@ -1,4 +1,3 @@
-import pytest
 from app import training_features, raw_data
 
 
