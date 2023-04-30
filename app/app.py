@@ -12,9 +12,11 @@ from sklearn.preprocessing import MinMaxScaler
 from PIL import Image
 from lime import lime_tabular
 
-
+logo_image = Image.open("./data/logo.png")
 st.set_page_config(
-    page_title="CREDIT SCORING - DACHBOARD CLIENT SCORING", page_icon="", layout="wide"
+    page_title="CREDIT SCORING - DACHBOARD CLIENT SCORING",
+    page_icon=logo_image,
+    layout="wide",
 )
 
 
@@ -80,7 +82,6 @@ def main():
     # main function
     with st.sidebar:
         col1, col2, col3 = st.columns(3)
-        logo_image = Image.open("./data/logo.png")
         col2.image(logo_image, use_column_width=True)
         st.markdown("""---""")
         st.markdown(
